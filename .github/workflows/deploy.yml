@@ -100,10 +100,13 @@ jobs:
           set -eu
 
           APP_DIR=/opt/klifur
+          PULL_CONFIG=/tmp/klifur-docker-anon
           mkdir -p "$APP_DIR/routes"
+          rm -rf "$PULL_CONFIG"
+          mkdir -p "$PULL_CONFIG"
           cd "$APP_DIR"
 
-          docker pull "$IMAGE"
+          DOCKER_CONFIG="$PULL_CONFIG" docker pull "$IMAGE"
           docker run --rm --user root -v "$APP_DIR/routes:/data/routes" "$IMAGE" sh -c 'chown -R 1001:1001 /data/routes'
 
           cat > compose.yml <<COMPOSE
