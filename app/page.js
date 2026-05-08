@@ -1,65 +1,121 @@
-import Image from "next/image";
+import Link from "next/link";
+import { listRoutes } from "@/lib/routes-server";
+import { DIFFICULTY_LABEL } from "@/lib/route-defs";
 
-export default function Home() {
+export default async function Home() {
+  const routes = await listRoutes();
+  const featured = routes.slice(0, 3);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-12 px-6 py-12">
+      <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+        <div className="flex flex-col gap-5">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-amber-300/70 bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+            <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />
+            物理攀岩谜题
+          </span>
+          <h1 className="text-4xl font-bold leading-tight tracking-tight text-stone-900 sm:text-5xl">
+            像真正的攀岩手一样，思考下一个动作。
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+          <p className="max-w-xl text-base leading-7 text-stone-600">
+            Klifur 是一个柔体物理攀岩谜题游戏：拖动手脚抓住墙上的手点，
+            保持至少两个支点，让角色一步步登上墙顶。在创作工坊里，你也可以亲手设计自己的路线并分享出来。
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/play"
+              className="inline-flex h-11 items-center rounded-full bg-stone-900 px-5 text-sm font-semibold text-white hover:bg-stone-700"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              开始攀岩
+            </Link>
+            <Link
+              href="/workshop"
+              className="inline-flex h-11 items-center rounded-full border border-stone-300 bg-white px-5 text-sm font-semibold text-stone-800 hover:bg-stone-100"
             >
-              Learning
-            </a>{" "}
-            center.
+              进入创作工坊
+            </Link>
+          </div>
+        </div>
+        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-3xl border border-stone-300 bg-gradient-to-b from-amber-100 via-amber-50 to-stone-200 shadow-xl">
+          <div className="absolute inset-0 grid grid-cols-4 gap-3 p-6">
+            {Array.from({ length: 24 }).map((_, i) => (
+              <div
+                key={i}
+                className="aspect-square rounded-full"
+                style={{
+                  backgroundColor:
+                    i === 0 ? "#22c55e" : i === 23 ? "#ef4444" : "#a16b3d",
+                  opacity: i === 0 || i === 23 ? 1 : 0.85,
+                  transform: `translate(${(i % 4) * 6 - 9}px, ${Math.sin(i) * 8}px)`,
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div className="mb-4 flex items-end justify-between">
+          <h2 className="text-2xl font-bold tracking-tight text-stone-900">推荐路线</h2>
+          <Link href="/play" className="text-sm font-medium text-amber-700 hover:underline">
+            查看全部 →
+          </Link>
+        </div>
+        {featured.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-10 text-center">
+            <p className="text-stone-600">还没有任何路线。</p>
+            <Link
+              href="/workshop"
+              className="mt-3 inline-flex h-9 items-center rounded-full bg-stone-900 px-4 text-sm font-medium text-white hover:bg-stone-700"
+            >
+              成为第一位作者
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {featured.map((r) => (
+              <Link
+                key={r.id}
+                href={`/play/${r.id}`}
+                className="group flex flex-col gap-2 rounded-2xl border border-stone-300 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs uppercase tracking-wide text-stone-400">
+                    {DIFFICULTY_LABEL[r.difficulty] ?? r.difficulty}
+                  </span>
+                  <span className="text-xs text-stone-400">{r.holdCount} 个手点</span>
+                </div>
+                <h3 className="text-lg font-bold text-stone-900 group-hover:text-amber-700">
+                  {r.name}
+                </h3>
+                <p className="text-sm text-stone-500">作者 · {r.author}</p>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="grid gap-4 rounded-3xl border border-stone-200 bg-white p-8 shadow-sm sm:grid-cols-3">
+        <div>
+          <h3 className="text-base font-bold text-stone-900">柔体物理</h3>
+          <p className="mt-1 text-sm text-stone-500">
+            Verlet 骨骼模拟，松开手脚会真实地下垂、摇晃。
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div>
+          <h3 className="text-base font-bold text-stone-900">手点谜题</h3>
+          <p className="mt-1 text-sm text-stone-500">
+            起点、终点、普通手点 —— 关键在于规划顺序与重心。
+          </p>
         </div>
-      </main>
-    </div>
+        <div>
+          <h3 className="text-base font-bold text-stone-900">创作工坊</h3>
+          <p className="mt-1 text-sm text-stone-500">
+            点点鼠标设计自己的路线，发布之后任何人都可以来挑战。
+          </p>
+        </div>
+      </section>
+    </main>
   );
 }

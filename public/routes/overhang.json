@@ -1,0 +1,21 @@
+{
+  "id": "overhang",
+  "name": "悬岩挑战",
+  "author": "Klifur",
+  "difficulty": "medium",
+  "description": "斜行路线 + 几个圆弧滑面，必须快速换手避免滑脱。",
+  "createdAt": "2026-05-08T00:00:00.000Z",
+  "wall": { "width": 800, "height": 1000, "color": "#d6b988" },
+  "holds": [
+    { "id": "o-start", "x": 250, "y": 760, "size": 38, "kind": "start" },
+    { "id": "o-fL", "x": 200, "y": 900, "size": 32, "kind": "jug" },
+    { "id": "o-fR", "x": 320, "y": 900, "size": 30, "kind": "jug" },
+    { "id": "o-1", "x": 360, "y": 660, "size": 26, "kind": "jug" },
+    { "id": "o-2", "x": 480, "y": 580, "size": 26, "kind": "sloper" },
+    { "id": "o-3", "x": 400, "y": 460, "size": 26, "kind": "jug" },
+    { "id": "o-4", "x": 540, "y": 380, "size": 26, "kind": "sloper" },
+    { "id": "o-5", "x": 460, "y": 280, "size": 26, "kind": "jug" },
+    { "id": "o-6", "x": 580, "y": 200, "size": 26, "kind": "jug" },
+    { "id": "o-finish", "x": 580, "y": 90, "size": 38, "kind": "finish" }
+  ]
+}

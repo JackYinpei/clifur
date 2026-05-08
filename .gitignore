@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+Snipaste_*.png
+.agents/
+.codex/
 
 # debug
 npm-debug.log*

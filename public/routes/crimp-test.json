@@ -1,0 +1,26 @@
+{
+  "id": "crimp-test",
+  "name": "棱点试炼",
+  "author": "Klifur",
+  "difficulty": "hard",
+  "description": "大量小棱点 — 脚踩不上去，必须把脚踩在大凸点上换手。",
+  "createdAt": "2026-05-08T00:00:00.000Z",
+  "wall": { "width": 800, "height": 1000, "color": "#c9a988" },
+  "holds": [
+    { "id": "c-start", "x": 400, "y": 780, "size": 36, "kind": "start" },
+    { "id": "c-fL", "x": 340, "y": 920, "size": 30, "kind": "jug" },
+    { "id": "c-fR", "x": 460, "y": 920, "size": 30, "kind": "jug" },
+    { "id": "c-h1", "x": 330, "y": 660, "size": 16, "kind": "crimp" },
+    { "id": "c-h2", "x": 470, "y": 660, "size": 16, "kind": "crimp" },
+    { "id": "c-foot1", "x": 400, "y": 720, "size": 30, "kind": "jug" },
+    { "id": "c-h3", "x": 320, "y": 540, "size": 16, "kind": "crimp" },
+    { "id": "c-h4", "x": 480, "y": 540, "size": 16, "kind": "crimp" },
+    { "id": "c-foot2", "x": 400, "y": 600, "size": 30, "kind": "jug" },
+    { "id": "c-h5", "x": 350, "y": 420, "size": 18, "kind": "sloper" },
+    { "id": "c-h6", "x": 460, "y": 420, "size": 18, "kind": "sloper" },
+    { "id": "c-foot3", "x": 400, "y": 470, "size": 30, "kind": "jug" },
+    { "id": "c-h7", "x": 360, "y": 290, "size": 28, "kind": "jug" },
+    { "id": "c-h8", "x": 470, "y": 200, "size": 28, "kind": "jug" },
+    { "id": "c-finish", "x": 400, "y": 90, "size": 38, "kind": "finish" }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "starter",
+  "name": "新手入门",
+  "author": "Klifur",
+  "difficulty": "easy",
+  "description": "经典 Z 字形路线，全是大凸点，适合熟悉操作。",
+  "createdAt": "2026-05-08T00:00:00.000Z",
+  "wall": { "width": 800, "height": 1000, "color": "#e8d2ac" },
+  "holds": [
+    { "id": "h-start", "x": 400, "y": 780, "size": 36, "kind": "start" },
+    { "id": "h-fL", "x": 340, "y": 920, "size": 30, "kind": "jug" },
+    { "id": "h-fR", "x": 460, "y": 920, "size": 30, "kind": "jug" },
+    { "id": "h-1", "x": 320, "y": 660, "size": 28, "kind": "jug" },
+    { "id": "h-2", "x": 470, "y": 560, "size": 28, "kind": "jug" },
+    { "id": "h-3", "x": 350, "y": 460, "size": 28, "kind": "jug" },
+    { "id": "h-4", "x": 480, "y": 360, "size": 28, "kind": "jug" },
+    { "id": "h-5", "x": 360, "y": 250, "size": 28, "kind": "jug" },
+    { "id": "h-6", "x": 470, "y": 160, "size": 28, "kind": "jug" },
+    { "id": "h-finish", "x": 400, "y": 80, "size": 38, "kind": "finish" }
+  ]
+}

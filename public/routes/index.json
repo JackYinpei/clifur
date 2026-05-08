@@ -1,0 +1,31 @@
+{
+  "routes": [
+    {
+      "id": "crimp-test",
+      "name": "棱点试炼",
+      "author": "Klifur",
+      "difficulty": "hard",
+      "description": "大量小棱点 — 脚踩不上去，必须把脚踩在大凸点上换手。",
+      "holdCount": 15,
+      "createdAt": "2026-05-08T00:00:00.000Z"
+    },
+    {
+      "id": "overhang",
+      "name": "悬岩挑战",
+      "author": "Klifur",
+      "difficulty": "medium",
+      "description": "斜行路线 + 几个圆弧滑面，必须快速换手避免滑脱。",
+      "holdCount": 10,
+      "createdAt": "2026-05-08T00:00:00.000Z"
+    },
+    {
+      "id": "starter",
+      "name": "新手入门",
+      "author": "Klifur",
+      "difficulty": "easy",
+      "description": "经典 Z 字形路线，全是大凸点，适合熟悉操作。",
+      "holdCount": 10,
+      "createdAt": "2026-05-08T00:00:00.000Z"
+    }
+  ]
+}
