@@ -8,14 +8,15 @@
   "wall": { "width": 800, "height": 1000, "color": "#e8d2ac" },
   "holds": [
     { "id": "h-start", "x": 400, "y": 780, "size": 36, "kind": "start" },
-    { "id": "h-fL", "x": 340, "y": 920, "size": 30, "kind": "jug" },
-    { "id": "h-fR", "x": 460, "y": 920, "size": 30, "kind": "jug" },
-    { "id": "h-1", "x": 320, "y": 660, "size": 28, "kind": "jug" },
-    { "id": "h-2", "x": 470, "y": 560, "size": 28, "kind": "jug" },
-    { "id": "h-3", "x": 350, "y": 460, "size": 28, "kind": "jug" },
-    { "id": "h-4", "x": 480, "y": 360, "size": 28, "kind": "jug" },
-    { "id": "h-5", "x": 360, "y": 250, "size": 28, "kind": "jug" },
-    { "id": "h-6", "x": 470, "y": 160, "size": 28, "kind": "jug" },
-    { "id": "h-finish", "x": 400, "y": 80, "size": 38, "kind": "finish" }
+    { "id": "h-fL", "x": 340, "y": 900, "size": 30, "kind": "jug" },
+    { "id": "h-fR", "x": 460, "y": 900, "size": 30, "kind": "jug" },
+    { "id": "h-1", "x": 340, "y": 700, "size": 28, "kind": "jug" },
+    { "id": "h-2", "x": 460, "y": 620, "size": 28, "kind": "jug" },
+    { "id": "h-3", "x": 340, "y": 540, "size": 28, "kind": "jug" },
+    { "id": "h-4", "x": 460, "y": 460, "size": 28, "kind": "jug" },
+    { "id": "h-5", "x": 340, "y": 380, "size": 28, "kind": "jug" },
+    { "id": "h-6", "x": 460, "y": 300, "size": 28, "kind": "jug" },
+    { "id": "h-7", "x": 360, "y": 220, "size": 28, "kind": "jug" },
+    { "id": "h-finish", "x": 400, "y": 130, "size": 38, "kind": "finish" }
   ]
 }

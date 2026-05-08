@@ -253,6 +253,17 @@ export default function RouteEditor({ initial }) {
     [route.holds, selectedId],
   );
 
+  const hasStart = route.holds.some((h) => h.kind === "start");
+  const hasFinish = route.holds.some((h) => h.kind === "finish");
+
+  // If the active tool just got disabled (e.g. user added the start hold,
+  // so the start tool disappears), fall back to the move tool so a click
+  // on empty space doesn't try to place another forbidden hold.
+  useEffect(() => {
+    if (tool === "start" && hasStart) setTool("move");
+    if (tool === "finish" && hasFinish) setTool("move");
+  }, [tool, hasStart, hasFinish]);
+
   if (previewing) {
     // Need a route id for ClimberGame's effect; provide a transient one
     const playable = { ...route, id: route.id || "preview" };
@@ -272,100 +283,106 @@ export default function RouteEditor({ initial }) {
     );
   }
 
+  const TOOLS = [
+    ["jug", "大凸点", "好抓的大点", true],
+    ["crimp", "小棱点", "脚踩不上", true],
+    ["sloper", "圆弧点", "4 秒滑落", true],
+    ["start", "起点", "路线起点", !hasStart],
+    ["finish", "终点", "双手抓到即胜", !hasFinish],
+    ["move", "选择", "拖动 / 编辑", true],
+    ["erase", "删除", "点击删除", true],
+  ];
+
   return (
-    <div className="flex flex-1 flex-col lg:flex-row">
-      <aside className="w-full shrink-0 border-b border-stone-300/60 bg-stone-50 p-4 text-sm lg:w-80 lg:border-b-0 lg:border-r">
-        <h2 className="text-base font-semibold text-stone-800">路线信息</h2>
-        <div className="mt-3 grid gap-3">
-          <Field label="名称">
-            <input
-              value={route.name}
-              onChange={(e) => setRoute({ ...route, name: e.target.value })}
-              className="w-full rounded-md border border-stone-300 bg-white px-2 py-1.5 text-sm focus:border-amber-500 focus:outline-none"
-              maxLength={40}
-            />
-          </Field>
-          <Field label="作者">
-            <input
-              value={route.author}
-              onChange={(e) => setRoute({ ...route, author: e.target.value })}
-              className="w-full rounded-md border border-stone-300 bg-white px-2 py-1.5 text-sm focus:border-amber-500 focus:outline-none"
-              maxLength={32}
-            />
-          </Field>
-          <Field label="难度">
-            <select
-              value={route.difficulty}
-              onChange={(e) => setRoute({ ...route, difficulty: e.target.value })}
-              className="w-full rounded-md border border-stone-300 bg-white px-2 py-1.5 text-sm focus:border-amber-500 focus:outline-none"
-            >
-              {DIFFICULTIES.map((d) => (
-                <option key={d} value={d}>{DIFFICULTY_LABEL[d]}</option>
-              ))}
-            </select>
-          </Field>
-          <Field label="描述（可选）">
-            <textarea
-              value={route.description ?? ""}
-              onChange={(e) => setRoute({ ...route, description: e.target.value })}
-              rows={2}
-              className="w-full resize-none rounded-md border border-stone-300 bg-white px-2 py-1.5 text-sm focus:border-amber-500 focus:outline-none"
-              maxLength={160}
-            />
-          </Field>
-        </div>
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col lg:flex-row">
+      <aside className="flex w-full shrink-0 flex-col gap-4 overflow-y-auto border-b border-stone-300/60 bg-stone-50 p-4 text-sm text-stone-800 lg:h-full lg:w-72 lg:border-b-0 lg:border-r">
+        <section>
+          <h2 className="text-sm font-semibold text-stone-800">路线信息</h2>
+          <div className="mt-2 grid gap-2">
+            <Field label="名称">
+              <input
+                value={route.name}
+                onChange={(e) => setRoute({ ...route, name: e.target.value })}
+                placeholder="未命名路线"
+                className="w-full rounded-md border border-stone-300 bg-white px-2 py-1.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none"
+                maxLength={40}
+              />
+            </Field>
+            <div className="grid grid-cols-2 gap-2">
+              <Field label="作者">
+                <input
+                  value={route.author}
+                  onChange={(e) => setRoute({ ...route, author: e.target.value })}
+                  placeholder="匿名"
+                  className="w-full rounded-md border border-stone-300 bg-white px-2 py-1.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none"
+                  maxLength={32}
+                />
+              </Field>
+              <Field label="难度">
+                <select
+                  value={route.difficulty}
+                  onChange={(e) => setRoute({ ...route, difficulty: e.target.value })}
+                  className="w-full rounded-md border border-stone-300 bg-white px-2 py-1.5 text-sm text-stone-900 focus:border-amber-500 focus:outline-none"
+                >
+                  {DIFFICULTIES.map((d) => (
+                    <option key={d} value={d}>{DIFFICULTY_LABEL[d]}</option>
+                  ))}
+                </select>
+              </Field>
+            </div>
+            <Field label="描述">
+              <textarea
+                value={route.description ?? ""}
+                onChange={(e) => setRoute({ ...route, description: e.target.value })}
+                rows={2}
+                placeholder="一句话介绍这条路线…"
+                className="w-full resize-none rounded-md border border-stone-300 bg-white px-2 py-1.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none"
+                maxLength={160}
+              />
+            </Field>
+          </div>
+        </section>
 
-        <h2 className="mt-5 text-base font-semibold text-stone-800">工具</h2>
-        <div className="mt-2 grid grid-cols-3 gap-2">
-          {[
-            ["jug", "大凸点", "好抓的大点"],
-            ["crimp", "小棱点", "脚踩不上"],
-            ["sloper", "圆弧点", "4 秒滑落"],
-            ["start", "起点", "路线起点"],
-            ["finish", "终点", "双手抓到即胜"],
-            ["move", "选择", "拖动 / 编辑"],
-            ["erase", "删除", "点击删除"],
-          ].map(([k, label, desc]) => (
-            <button
-              key={k}
-              onClick={() => setTool(k)}
-              title={desc}
-              className={`rounded-md border px-2 py-1.5 text-xs font-medium ${
-                tool === k
-                  ? "border-amber-600 bg-amber-100 text-amber-900"
-                  : "border-stone-300 bg-white text-stone-700 hover:bg-stone-100"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <p className="mt-2 text-xs text-stone-500">
-          点击空白处放置手点 · 拖拽手点移动 · 点击已存在的手点选中后编辑
-        </p>
-        <ul className="mt-3 space-y-1 rounded-md bg-stone-100 p-2 text-[11px] leading-snug text-stone-600">
-          {Object.entries(HOLD_KIND_DESC).map(([k, d]) => (
-            <li key={k}><span className="font-semibold text-stone-800">{HOLD_KIND_LABEL[k]}</span> · {d}</li>
-          ))}
-        </ul>
+        <section>
+          <h2 className="text-sm font-semibold text-stone-800">工具</h2>
+          <div className="mt-2 grid grid-cols-3 gap-1.5">
+            {TOOLS.filter(([, , , show]) => show).map(([k, label, desc]) => (
+              <button
+                key={k}
+                onClick={() => setTool(k)}
+                title={desc}
+                className={`rounded-md border px-2 py-1.5 text-xs font-medium ${
+                  tool === k
+                    ? "border-amber-600 bg-amber-100 text-amber-900"
+                    : "border-stone-300 bg-white text-stone-700 hover:bg-stone-100"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-1.5 text-[11px] leading-snug text-stone-500">
+            点击空白处放置手点 · 拖拽移动 · 点中已有手点编辑
+          </p>
+        </section>
 
-        {selected && (
-          <div className="mt-4 rounded-lg border border-stone-300 bg-white p-3">
-            <div className="flex items-center justify-between text-sm font-semibold">
+        {selected ? (
+          <section className="rounded-lg border border-stone-300 bg-white p-3">
+            <div className="flex items-center justify-between text-sm font-semibold text-stone-800">
               <span>已选手点</span>
               <button
                 onClick={() => deleteHold(selected.id)}
-                className="rounded bg-red-600 px-2 py-0.5 text-xs text-white hover:bg-red-700"
+                className="rounded bg-red-600 px-2 py-0.5 text-xs font-medium text-white hover:bg-red-700"
               >
                 删除
               </button>
             </div>
             <div className="mt-2 grid gap-2">
-              <Field label={`类型`}>
+              <Field label="类型">
                 <select
                   value={selected.kind}
                   onChange={(e) => updateHold(selected.id, { kind: e.target.value })}
-                  className="w-full rounded-md border border-stone-300 bg-white px-2 py-1 text-sm"
+                  className="w-full rounded-md border border-stone-300 bg-white px-2 py-1 text-sm text-stone-900"
                 >
                   {HOLD_KINDS.map((k) => (
                     <option key={k} value={k}>{HOLD_KIND_LABEL[k]}</option>
@@ -387,11 +404,18 @@ export default function RouteEditor({ initial }) {
                 <div>y: {Math.round(selected.y)}</div>
               </div>
             </div>
-          </div>
+          </section>
+        ) : (
+          <section className="rounded-md bg-stone-100 p-2 text-[11px] leading-snug text-stone-600">
+            {Object.entries(HOLD_KIND_DESC).map(([k, d]) => (
+              <p key={k} className="truncate">
+                <span className="font-semibold text-stone-800">{HOLD_KIND_LABEL[k]}</span> · {d}
+              </p>
+            ))}
+          </section>
         )}
 
-        <h2 className="mt-5 text-base font-semibold text-stone-800">操作</h2>
-        <div className="mt-2 flex flex-col gap-2">
+        <section className="mt-auto flex flex-col gap-2">
           <button
             onClick={() => setPreviewing(true)}
             className="rounded-md bg-stone-800 px-3 py-2 text-sm font-medium text-white hover:bg-stone-700"
@@ -401,22 +425,22 @@ export default function RouteEditor({ initial }) {
           <button
             onClick={publish}
             disabled={publishing}
-            className="rounded-md bg-amber-600 px-3 py-2 text-sm font-semibold text-white hover:bg-amber-700"
+            className="rounded-md bg-amber-600 px-3 py-2 text-sm font-semibold text-white hover:bg-amber-700 disabled:opacity-60"
           >
             {publishing ? "发布中…" : savedRoute ? "再次发布更新" : "发布到工坊"}
           </button>
           {error && <p className="text-xs text-red-600">{error}</p>}
           {savedRoute && (
-            <p className="rounded bg-emerald-50 px-2 py-1 text-xs text-emerald-700">
+            <p className="rounded bg-emerald-50 px-2 py-1 text-[11px] leading-snug text-emerald-700">
               已保存到 <code className="rounded bg-white px-1 py-0.5">/routes/{savedRoute.id}.json</code>
               {" · "}
               <a className="underline" href={`/play/${savedRoute.id}`}>立即试玩 →</a>
             </p>
           )}
-        </div>
+        </section>
       </aside>
 
-      <div className="relative flex-1 bg-stone-200">
+      <div className="relative min-h-[60vh] flex-1 bg-stone-200 lg:min-h-0">
         <canvas
           ref={canvasRef}
           className="absolute inset-0 h-full w-full touch-none select-none"

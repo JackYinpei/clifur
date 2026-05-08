@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listRoutes } from "@/lib/routes-server";
 import { DIFFICULTY_LABEL } from "@/lib/route-defs";
+import HeroWallPreview from "@/components/HeroWallPreview";
 
 export default async function Home() {
   const routes = await listRoutes();
@@ -36,23 +37,8 @@ export default async function Home() {
             </Link>
           </div>
         </div>
-        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-3xl border border-stone-300 bg-gradient-to-b from-amber-100 via-amber-50 to-stone-200 shadow-xl">
-          <div className="absolute inset-0 grid grid-cols-4 gap-3 p-6">
-            {Array.from({ length: 24 }).map((_, i) => (
-              <div
-                key={i}
-                className="aspect-square rounded-full"
-                style={{
-                  backgroundColor:
-                    i === 0 ? "#22c55e" : i === 23 ? "#ef4444" : "#a16b3d",
-                  opacity: i === 0 || i === 23 ? 1 : 0.85,
-                  transform: `translate(${(i % 4) * 6 - 9}px, ${Math.sin(i) * 8}px)`,
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
-                }}
-              />
-            ))}
-          </div>
-        </div>
+        <HeroWallPreview />
+
       </section>
 
       <section>

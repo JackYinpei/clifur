@@ -27,7 +27,7 @@ import { HOLD_KIND_FILL, HOLD_KIND_RULES } from "@/lib/route-defs";
 // =============================================================================
 
 const GRAVITY = 0.55;
-const FRICTION = 0.86;          // heavy damping → no bouncing
+const FRICTION = 0.82;          // heavy damping → no bouncing
 const MAX_PARTICLE_SPEED = 22;  // px per frame; kills explosive constraint bounces
 const SOLVER_ITERS = 18;
 const FALL_GRACE_MS = 250;
@@ -71,9 +71,9 @@ const EFFORT_CURVE = 1.9;        // higher → harder slowdown near full extensi
 const HAND_MAX_REACH = ARM_LEN;
 const FOOT_MAX_REACH = LEG_LEN;
 const FOOT_LIMBS = ["LF", "RF"];
-const LEG_EXTENSION_DIST = (L.thigh + L.shin) * 0.92;
+const LEG_EXTENSION_DIST = (L.thigh + L.shin) * 0.94;
 const PELVIS_EXTENSION_DIST = Math.hypot(L.hipHalf, LEG_EXTENSION_DIST);
-const LEG_DRIVE_STIFFNESS = 0.72;
+const LEG_DRIVE_STIFFNESS = 0.55;
 const MIN_LOAD_FOOT_SCORE = 0.08;
 
 const HAND_TAPE = { LH: "#7c3aed", RH: "#dc2626" };
