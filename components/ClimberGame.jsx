@@ -864,6 +864,14 @@ export default function ClimberGame({ route, onWin }) {
       won: false,
       fallStart: null,
       resetQueued: false,
+      // Latched flag: once a hand drag pushes past maxR we *commit* to
+      // body-loading until the cursor is clearly back inside reach. Without
+      // this, micro-jitter at the boundary toggles pinning/leg-drive every
+      // frame and the body visibly convulses.
+      bodyLoaded: false,
+      // Time-smoothed leg drive. Snapping leg-drive each frame produced
+      // visible chest jumps; we lerp toward the target over ~180 ms instead.
+      legDrive: 0,
     };
     stateRef.current = state;
 
@@ -944,6 +952,8 @@ export default function ClimberGame({ route, onWin }) {
       state.fallStart = null;
       state.finishedElapsed = null;
       state.resetQueued = false;
+      state.bodyLoaded = false;
+      state.legDrive = 0;
       setStatus("playing");
     }
 
@@ -953,6 +963,7 @@ export default function ClimberGame({ route, onWin }) {
         state.climber.parts[LIMB_HANDLES[limb].end].pinned = false;
       }
       state.drag = null;
+      state.bodyLoaded = false;
     }
 
     function queueReset() {
@@ -970,6 +981,7 @@ export default function ClimberGame({ route, onWin }) {
       if (!limb) return;
       state.climber.grips[limb] = null;
       state.drag = { limb, x: w.x, y: w.y };
+      state.bodyLoaded = false;
     }
     function onPointerMove(e) {
       if (!state.drag) return;
@@ -990,6 +1002,7 @@ export default function ClimberGame({ route, onWin }) {
         setMoves(state.moves);
       }
       state.drag = null;
+      state.bodyLoaded = false;
     }
 
     canvas.addEventListener("pointerdown", onPointerDown);
@@ -1076,7 +1089,7 @@ export default function ClimberGame({ route, onWin }) {
       let dragOutOfReach = null;
       let dragTarget = null;
       let dragEffort = 0;          // 0 = relaxed, 1 = straining at max reach
-      let legDriveStrength = footSupport.score > 0 ? 0.62 : 0;
+      let targetLegDrive = footSupport.score > 0 ? 0.62 : 0;
       if (state.drag) {
         const limb = state.drag.limb;
         const handle = LIMB_HANDLES[limb];
@@ -1092,11 +1105,26 @@ export default function ClimberGame({ route, onWin }) {
         const reachOverflow = handle.kind === "hand"
           ? clamp01((rawTargetDist - maxR) / (maxR * 0.18))
           : 0;
-        const needsBodyMove = handle.kind === "hand" && reachOverflow > 0;
+        // Hysteresis on body-load. Engaging the moment the cursor crosses
+        // maxR and disengaging the moment it slips back inside causes the
+        // body to oscillate at the boundary (leg-drive shoves chest up →
+        // distance drops → load releases → chest settles → distance grows
+        // again → load re-engages). Latch instead: once engaged, stay
+        // engaged until the cursor is comfortably inside the reach circle.
+        if (handle.kind === "hand") {
+          if (state.bodyLoaded) {
+            if (rawTargetDist < maxR * 0.94) state.bodyLoaded = false;
+          } else if (rawTargetDist > maxR) {
+            state.bodyLoaded = true;
+          }
+        } else {
+          state.bodyLoaded = false;
+        }
+        const needsBodyMove = handle.kind === "hand" && state.bodyLoaded;
         const hasLoadBearingFoot = footSupport.score >= MIN_LOAD_FOOT_SCORE;
         const canLoadBody = handle.kind === "foot" || (needsBodyMove && hasLoadBearingFoot);
         if (needsBodyMove && hasLoadBearingFoot) {
-          legDriveStrength = Math.max(legDriveStrength, 0.62 + Math.max(upwardReach, reachOverflow) * 0.38);
+          targetLegDrive = Math.max(targetLegDrive, 0.62 + Math.max(upwardReach, reachOverflow) * 0.38);
         }
 
         // Target = cursor clamped to anchor's max reach
@@ -1148,7 +1176,17 @@ export default function ClimberGame({ route, onWin }) {
           if (inReach && canGripWith(state.drag.limb, hovered)) dragOnHold = hovered;
           else dragOutOfReach = hovered;
         }
+      } else {
+        state.bodyLoaded = false;
       }
+
+      // Smooth leg-drive over a short window. Even with the bodyLoaded
+      // hysteresis, the magnitude of the boost still depends on
+      // upwardReach/reachOverflow which can change quickly; lerping the
+      // applied strength prevents any residual frame-to-frame snap.
+      const driveAlpha = 1 - Math.exp(-dt / 0.18);
+      state.legDrive += (targetLegDrive - state.legDrive) * driveAlpha;
+      const legDriveStrength = state.legDrive;
 
       // 4. Verlet step
       for (const k of ALL_PARTICLES) step(parts[k]);

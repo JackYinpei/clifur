@@ -151,11 +151,11 @@ export default function RouteEditor({ initial }) {
     e.preventDefault();
     const w = worldFromEvent(e);
     const hit = findHoldAt(w.x, w.y);
-    if (tool === "erase") {
+    if (activeTool === "erase") {
       if (hit) deleteHold(hit.id);
       return;
     }
-    if (tool === "move") {
+    if (activeTool === "move") {
       if (hit) {
         setSelectedId(hit.id);
         dragStateRef.current = { id: hit.id, dx: hit.x - w.x, dy: hit.y - w.y };
@@ -173,7 +173,7 @@ export default function RouteEditor({ initial }) {
       return;
     }
     // tool name is also the kind: "jug" | "crimp" | "sloper" | "start" | "finish"
-    const kind = HOLD_KINDS.includes(tool) ? tool : "jug";
+    const kind = HOLD_KINDS.includes(activeTool) ? activeTool : "jug";
     const defaultSize = (
       kind === "finish" ? 38 :
       kind === "start" ? 36 :
@@ -256,13 +256,14 @@ export default function RouteEditor({ initial }) {
   const hasStart = route.holds.some((h) => h.kind === "start");
   const hasFinish = route.holds.some((h) => h.kind === "finish");
 
-  // If the active tool just got disabled (e.g. user added the start hold,
-  // so the start tool disappears), fall back to the move tool so a click
-  // on empty space doesn't try to place another forbidden hold.
-  useEffect(() => {
-    if (tool === "start" && hasStart) setTool("move");
-    if (tool === "finish" && hasFinish) setTool("move");
-  }, [tool, hasStart, hasFinish]);
+  // Derived: when the user-selected tool is one that has just been disabled
+  // (e.g. they picked "start" then placed the start hold), fall back to
+  // "move" so an empty-canvas click doesn't try to place another forbidden
+  // hold. Computing this on render avoids a setState-in-effect cascade.
+  const activeTool =
+    (tool === "start" && hasStart) || (tool === "finish" && hasFinish)
+      ? "move"
+      : tool;
 
   if (previewing) {
     // Need a route id for ClimberGame's effect; provide a transient one
@@ -352,7 +353,7 @@ export default function RouteEditor({ initial }) {
                 onClick={() => setTool(k)}
                 title={desc}
                 className={`rounded-md border px-2 py-1.5 text-xs font-medium ${
-                  tool === k
+                  activeTool === k
                     ? "border-amber-600 bg-amber-100 text-amber-900"
                     : "border-stone-300 bg-white text-stone-700 hover:bg-stone-100"
                 }`}
